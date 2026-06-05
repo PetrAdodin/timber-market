@@ -1,0 +1,15 @@
+<ul class="side-list">
+    <li>
+        <a href="{% url 'home' %}" class="{% if cat_selected == 0 %}active{% endif %}">
+            Все материалы
+        </a>
+    </li>
+    {% for category in categories %}
+    <li>
+        <a href="{{ category.get_absolute_url }}" class="{% if category.pk == cat_selected %}active{% endif %}">
+            <span>{{ category.name }}</span>
+            <em>{{ category.total }}</em>
+        </a>
+    </li>
+    {% endfor %}
+</ul>

@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+{% if request.resolver_match.url_name == 'home' %}
+<section class="hero">
+    <div class="hero-content">
+        <p class="eyebrow">Натуральные материалы для строительства и отделки</p>
+        <h1>Современный каталог пиломатериалов</h1>
+        <p>
+            Timber Market помогает изучать характеристики доски, бруса, вагонки,
+            фанеры, террасных материалов и других изделий из древесины.
+        </p>
+        <div class="hero-actions">
+            <a href="{% url 'add_page' %}" class="btn btn-primary">Добавить материал</a>
+            <a href="{% url 'about' %}" class="btn btn-secondary">О компании</a>
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<div class="section-head">
+    <div>
+        <p class="eyebrow">Каталог</p>
+        <h2>{{ title }}</h2>
+    </div>
+</div>
+
+{% if products %}
+<div class="product-grid">
+    {% for product in products %}
+    <article class="product-card">
+        <a href="{{ product.get_absolute_url }}" class="product-image">
+            {% if product.photo %}
+                <img src="{{ product.photo.url }}" alt="{{ product.title }}">
+            {% else %}
+                <div class="image-placeholder">Фото материала отсутствует</div>
+            {% endif %}
+        </a>
+
+        <div class="product-body">
+            <div class="card-meta">
+                <a href="{{ product.cat.get_absolute_url }}" class="category-badge">{{ product.cat.name }}</a>
+                <span>{{ product.time_create|date:"d.m.Y" }}</span>
+            </div>
+
+            <h3>
+                <a href="{{ product.get_absolute_url }}">{{ product.title }}</a>
+            </h3>
+
+            <p class="product-excerpt">{{ product.content|truncatewords:24 }}</p>
+
+            <div class="spec-list compact">
+                <span><strong>Порода:</strong> {{ product.wood_type }}</span>
+                <span><strong>Размер:</strong> {{ product.size }}</span>
+                <span><strong>Сорт:</strong> {{ product.grade }}</span>
+                <span><strong>Цена:</strong> {{ product.price }} ₽</span>
+            </div>
+
+            <div class="tag-row">
+                {% for tag in product.tags.all %}
+                    <a href="{{ tag.get_absolute_url }}" class="tag-badge">#{{ tag.tag }}</a>
+                {% endfor %}
+            </div>
+
+            <div class="card-footer">
+                <span class="author">Автор: {{ product.author.username }}</span>
+                <a href="{{ product.get_absolute_url }}" class="read-more">Подробнее</a>
+            </div>
+        </div>
+    </article>
+    {% endfor %}
+</div>
+
+{% include 'catalog/pagination.html' %}
+{% else %}
+<div class="empty-state">
+    <h3>Материалы не найдены</h3>
+    <p>В этом разделе пока нет опубликованных карточек пиломатериалов.</p>
+</div>
+{% endif %}
+{% endblock %}

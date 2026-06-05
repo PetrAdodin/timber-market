@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block navigation %}{% endblock %}
+
+{% block content %}
+<section class="auth-page">
+    <div class="auth-card">
+        <p class="eyebrow">Timber Market</p>
+        <h1>Регистрация</h1>
+        <p class="form-intro">Создайте аккаунт, чтобы публиковать карточки пиломатериалов.</p>
+
+        <form method="post" class="styled-form">
+            {% csrf_token %}
+
+            {% if form.non_field_errors %}
+                <div class="form-errors">{{ form.non_field_errors }}</div>
+            {% endif %}
+
+            {% for field in form %}
+                <div class="form-row">
+                    <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                    {{ field }}
+                    {% if field.help_text %}
+                        <small>{{ field.help_text }}</small>
+                    {% endif %}
+                    {% if field.errors %}
+                        <div class="field-errors">{{ field.errors }}</div>
+                    {% endif %}
+                </div>
+            {% endfor %}
+
+            <button type="submit" class="btn btn-primary full-width">Зарегистрироваться</button>
+        </form>
+
+        <p class="auth-switch">
+            Уже есть аккаунт?
+            <a href="{% url 'users:login' %}">Войти</a>
+        </p>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<section class="delete-page">
+    <div class="delete-card">
+        <p class="eyebrow">Подтверждение удаления</p>
+        <h1>Удалить материал?</h1>
+        <p>
+            Вы собираетесь удалить карточку
+            <strong>«{{ product.title }}»</strong>.
+            Это действие нельзя отменить.
+        </p>
+
+        <form method="post">
+            {% csrf_token %}
+            <div class="form-actions">
+                <button type="submit" class="btn btn-danger">Да, удалить</button>
+                <a href="{{ product.get_absolute_url }}" class="btn btn-secondary">Отмена</a>
+            </div>
+        </form>
+    </div>
+</section>
+{% endblock %}

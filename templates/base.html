@@ -1,0 +1,77 @@
+{% load static %}
+{% load catalog_tags %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}{{ title|default:"Timber Market" }}{% endblock %}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'catalog/css/styles.css' %}">
+</head>
+<body>
+<header class="site-header">
+    <div class="header-inner">
+        <a href="{% url 'home' %}" class="logo">
+            <span class="logo-mark">TM</span>
+            <span class="logo-text">Timber Market</span>
+        </a>
+
+        {% block mainmenu %}
+        <nav class="main-nav">
+            <a href="{% url 'home' %}">Главная</a>
+            <a href="{% url 'about' %}">О компании</a>
+            <a href="{% url 'add_page' %}">Добавить материал</a>
+
+            {% if user.is_authenticated %}
+                <span class="user-pill">{{ user.username }}</span>
+                <form action="{% url 'users:logout' %}" method="post" class="logout-form">
+                    {% csrf_token %}
+                    <button type="submit" class="nav-button">Выйти</button>
+                </form>
+            {% else %}
+                <a href="{% url 'users:login' %}">Войти</a>
+                <a href="{% url 'users:register' %}" class="nav-accent">Регистрация</a>
+            {% endif %}
+        </nav>
+        {% endblock %}
+    </div>
+</header>
+
+{% if messages %}
+<section class="messages">
+    {% for message in messages %}
+        <div class="message message-{{ message.tags }}">{{ message }}</div>
+    {% endfor %}
+</section>
+{% endif %}
+
+<main class="page">
+    <div class="layout">
+        {% block navigation %}
+        <aside class="sidebar">
+            <div class="sidebar-card">
+                <h3>Категории</h3>
+                {% show_categories cat_selected %}
+            </div>
+
+            <div class="sidebar-card">
+                <h3>Теги</h3>
+                {% show_all_tags %}
+            </div>
+        </aside>
+        {% endblock %}
+
+        <section class="content">
+            {% block content %}
+            {% endblock %}
+        </section>
+    </div>
+</main>
+
+<footer class="site-footer">
+    <div class="footer-inner">
+        <p>© Timber Market. Учебный Django-проект о пиломатериалах.</p>
+    </div>
+</footer>
+</body>
+</html>

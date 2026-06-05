@@ -1,0 +1,142 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ product.title }}{% endblock %}
+
+{% block content %}
+<article class="detail-card">
+    <div class="detail-header">
+        <div>
+            <p class="eyebrow">{{ product.cat.name }}</p>
+            <h1>{{ product.title }}</h1>
+            <p class="detail-meta">
+                Автор: {{ product.author.username }} · {{ product.time_create|date:"d.m.Y H:i" }}
+            </p>
+        </div>
+
+        {% if user == product.author or user.is_superuser %}
+        <div class="owner-actions">
+            <a href="{% url 'edit_page' product.slug %}" class="btn btn-secondary">Редактировать</a>
+            <a href="{% url 'delete_page' product.slug %}" class="btn btn-danger">Удалить</a>
+        </div>
+        {% endif %}
+    </div>
+
+    <div class="detail-image">
+        {% if product.photo %}
+            <img src="{{ product.photo.url }}" alt="{{ product.title }}">
+        {% else %}
+            <div class="image-placeholder large">Фото материала отсутствует</div>
+        {% endif %}
+    </div>
+
+    <div class="detail-content">
+        <h2>Описание материала</h2>
+        <p>{{ product.content|linebreaks }}</p>
+    </div>
+
+    <div class="spec-panel">
+        <h2>Характеристики</h2>
+        <div class="spec-grid">
+            <div><span>Порода древесины</span><strong>{{ product.wood_type }}</strong></div>
+            <div><span>Размер</span><strong>{{ product.size }}</strong></div>
+            <div><span>Сорт</span><strong>{{ product.grade }}</strong></div>
+            <div><span>Цена</span><strong>{{ product.price }} ₽</strong></div>
+            <div><span>Категория</span><strong><a href="{{ product.cat.get_absolute_url }}">{{ product.cat.name }}</a></strong></div>
+            <div>
+                <span>Поставщик</span>
+                <strong>
+                    {% if product.supplier %}
+                        {{ product.supplier.name }}, {{ product.supplier.city }}, опыт {{ product.supplier.experience_years }} лет
+                    {% else %}
+                        Не указан
+                    {% endif %}
+                </strong>
+            </div>
+        </div>
+
+        <div class="tag-row detail-tags">
+            {% for tag in product.tags.all %}
+                <a href="{{ tag.get_absolute_url }}" class="tag-badge">#{{ tag.tag }}</a>
+            {% empty %}
+                <span class="muted">Теги не указаны</span>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="reaction-panel">
+        <h2>Оценка материала</h2>
+
+        {% if user.is_authenticated %}
+        <div class="reaction-actions">
+            <form method="post" action="{% url 'set_reaction' product.slug 1 %}">
+                {% csrf_token %}
+                <button type="submit" class="btn {% if user_reaction == 1 %}btn-primary{% else %}btn-secondary{% endif %}">
+                    👍 Нравится · {{ likes_count }}
+                </button>
+            </form>
+
+            <form method="post" action="{% url 'set_reaction' product.slug -1 %}">
+                {% csrf_token %}
+                <button type="submit" class="btn {% if user_reaction == -1 %}btn-danger{% else %}btn-secondary{% endif %}">
+                    👎 Не нравится · {{ dislikes_count }}
+                </button>
+            </form>
+        </div>
+        {% else %}
+        <p class="auth-note">Чтобы поставить реакцию, войдите на сайт.</p>
+        <div class="reaction-counts">
+            <span>👍 {{ likes_count }}</span>
+            <span>👎 {{ dislikes_count }}</span>
+        </div>
+        {% endif %}
+    </div>
+
+    <section class="comments">
+        <h2>Комментарии</h2>
+
+        {% if comments %}
+            <div class="comment-list">
+                {% for comment in comments %}
+                <div class="comment-card">
+                    <div class="comment-head">
+                        <strong>{{ comment.author.username }}</strong>
+                        <span>{{ comment.time_create|date:"d.m.Y H:i" }}</span>
+                    </div>
+                    <p>{{ comment.text|linebreaks }}</p>
+                </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p class="muted">Комментариев пока нет.</p>
+        {% endif %}
+
+        <div class="comment-form-card">
+            {% if user.is_authenticated %}
+                <h3>Оставить комментарий</h3>
+                <form method="post" action="{% url 'add_comment' product.slug %}">
+                    {% csrf_token %}
+
+                    {% if comment_form.non_field_errors %}
+                        <div class="form-errors">{{ comment_form.non_field_errors }}</div>
+                    {% endif %}
+
+                    {% for field in comment_form %}
+                        <div class="form-row">
+                            <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                            {{ field }}
+                            {% if field.errors %}
+                                <div class="field-errors">{{ field.errors }}</div>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+
+                    <button type="submit" class="btn btn-primary">Отправить комментарий</button>
+                </form>
+            {% else %}
+                <p class="auth-note">Чтобы оставить комментарий, войдите на сайт.</p>
+                <a href="{% url 'users:login' %}" class="btn btn-primary">Войти</a>
+            {% endif %}
+        </div>
+    </section>
+</article>
+{% endblock %}
