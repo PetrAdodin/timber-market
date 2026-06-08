@@ -925,3 +925,11 @@ textarea.form-control {
         height: 200px;
     }
 }
+
+.auth-page-centered {
+    grid-column: 1 / -1;
+    width: 100%;
+    min-height: calc(100vh - 190px);
+    display: grid;
+    place-items: center;
+}

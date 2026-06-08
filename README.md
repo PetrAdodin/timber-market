@@ -124,7 +124,7 @@ cd timber\_market
 
 python -m venv .venv
 
-source .venv/bin/activate
+source .venv/Scripts/activate
 
 pip install -r requirements.txt
 

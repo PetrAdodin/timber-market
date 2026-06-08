@@ -16,7 +16,7 @@ class CatalogHome(DataMixin, ListView):
     context_object_name = 'products'
     title_page = 'Timber Market — каталог пиломатериалов'
     cat_selected = 0
-    paginate_by = 3
+    paginate_by = 4
 
     def get_queryset(self):
         return (
